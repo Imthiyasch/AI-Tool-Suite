@@ -1,0 +1,7 @@
+```json
+{
+  "summary": "I am sorry, but I cannot directly access or process the content of a YouTube video from a URL to generate a detailed summary. My capabilities are limited to processing text-based information from the web.",
+  "mindmap": "I am unable to analyze the video content and therefore cannot create a Mermaid.js mindmap of its key topics.",
+  "transcript": "I cannot access the audio or video content of the provided YouTube URL (https://www.youtube.com/watch?v=nOtbhE53nQY) to generate a verbatim transcript. My current abilities do not include direct interaction with video content for transcription."
+}
+```

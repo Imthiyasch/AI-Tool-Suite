@@ -1,0 +1,104 @@
+FAIL __tests__/summarizer.test.tsx
+  ΓùÅ Test suite failed to run
+
+      x Unterminated template
+         ,-[C:\Users\imthi\Desktop\P2\aio-tool-suite\app\dashboard\summarizer\page.tsx:124:1]
+     121 |                             <div className="flex space-x-1 lg:space-x-2 bg-black/40 p-1 rounded-lg">
+     122 |                                 <button
+     123 |                                     onClick={() => setActiveTab('summary')}
+     124 | ,->                                 className={\`flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium rounded-md transition-all \${activeTab === 'summary' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}\`}
+     125 | |                               >
+     126 | |                                   <List className="w-4 h-4" />
+     127 | |                                   Summary
+     128 | |                               </button>
+     129 | |                               <button
+     130 | |                                   onClick={() => setActiveTab('mindmap')}
+     131 | |                                   className={\`flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium rounded-md transition-all \${activeTab === 'mindmap' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}\`}
+     132 | |                               >
+     133 | |                                   <Network className="w-4 h-4" />
+     134 | |                                   Mindmap
+     135 | |                               </button>
+     136 | |                               <button
+     137 | |                                   onClick={() => setActiveTab('transcript')}
+     138 | |                                   className={\`flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium rounded-md transition-all \${activeTab === 'transcript' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}\`}
+     139 | |                               >
+     140 | |                                   <FileText className="w-4 h-4" />
+     141 | |                                   Script / Outline
+     142 | |                               </button>
+     143 | |                           </div>
+     144 | |   
+     145 | |                           <button
+     146 | |                               onClick={handleSaveNote}
+     147 | |                               disabled={saving || saved}
+     148 | |                               className="text-sm px-5 py-2.5 bg-emerald-600/90 hover:bg-emerald-600 text-white font-medium rounded-lg flex items-center gap-2 disabled:opacity-50 transition-colors shadow-sm w-full sm:w-auto justify-center"
+     149 | |                           >
+     150 | |                               {saving ? (
+     151 | |                                   <><Loader2 className="w-4 h-4 animate-spin"/> Saving...</>
+     152 | |                               ) : saved ? (
+     153 | |                                   "Saved to Smart Notes Γ£ô"
+     154 | |                               ) : (
+     155 | |                                   "Save to Smart Notes"
+     156 | |                               )}
+     157 | |                           </button>
+     158 | |                       </div>
+     159 | |   
+     160 | |                       {/* Content Area */}
+     161 | |                       <div className="p-6 md:p-8 min-h-[400px]">
+     162 | |                           {activeTab === 'summary' && (
+     163 | |                               <div className="prose prose-invert max-w-none prose-h2:text-2xl prose-h2:mb-4 prose-p:text-zinc-300 prose-li:text-zinc-300">
+     164 | |                                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
+     165 | |                                       {data.summary}
+     166 | |                                   </ReactMarkdown>
+     167 | |                               </div>
+     168 | |                           )}
+     169 | |   
+     170 | |                           {activeTab === 'mindmap' && (
+     171 | |                               <div className="flex flex-col items-center justify-center min-h-[300px]">
+     172 | |                                   {data.mindmap ? (
+     173 | |                                       <Mermaid chart={data.mindmap} />
+     174 | |                                   ) : (
+     175 | |                                       <p className="text-zinc-500 italic">No mindmap generated for this video.</p>
+     176 | |                                   )}
+     177 | |                               </div>
+     178 | |                           )}
+     179 | |   
+     180 | |                           {activeTab === 'transcript' && (
+     181 | |                               <div className="prose prose-invert max-w-none text-zinc-300">
+     182 | |                                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
+     183 | |                                       {data.transcript}
+     184 | |                                   </ReactMarkdown>
+     185 | |                               </div>
+     186 | |                           )}
+     187 | |                       </div>
+     188 | |                   </div>
+     189 | |               )}
+     190 | |           </div>
+     191 | |       );
+     192 | `-> }
+         `----
+      x Expected '</', got '<eof>'
+         ,-[C:\Users\imthi\Desktop\P2\aio-tool-suite\app\dashboard\summarizer\page.tsx:192:3]
+     190 |         </div>
+     191 |     );
+     192 | }
+         `----
+
+
+    Caused by:
+        Syntax Error
+
+    
+
+      at Object.transformSync (node_modules/next/src/build/swc/index.ts:1460:25)
+      at transformSync (node_modules/next/src/build/swc/index.ts:1591:19)
+      at Object.process (node_modules/next/src/build/swc/jest-transformer.ts:105:25)
+      at ScriptTransformer.transformSource (node_modules/@jest/transform/build/index.js:415:31)
+      at ScriptTransformer._transformAndBuildScript (node_modules/@jest/transform/build/index.js:512:40)
+      at ScriptTransformer.transform (node_modules/@jest/transform/build/index.js:551:19)
+      at Object.<anonymous> (__tests__/summarizer.test.tsx:35:54)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.75 s
+Ran all test suites matching __tests__/summarizer.test.tsx.
