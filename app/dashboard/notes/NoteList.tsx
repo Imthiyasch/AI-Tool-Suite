@@ -14,7 +14,7 @@ interface Note {
 
 interface NoteListProps {
   notes: Note[]
-  onDelete: (id: string) => Promise<any>
+  onDelete: (id: string) => Promise<void>
 }
 
 export const NoteList: React.FC<NoteListProps> = ({ notes, onDelete }) => {
@@ -47,7 +47,7 @@ export const NoteList: React.FC<NoteListProps> = ({ notes, onDelete }) => {
                 {/* Text content */}
                 {note.content && (
                     <p className="text-white text-lg font-bold whitespace-pre-wrap leading-relaxed mb-6 italic">
-                      "{note.content}"
+                      &quot;{note.content}&quot;
                     </p>
                 )}
 

@@ -1,10 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { redirect, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, Search, Youtube, LogOut, FileText, Menu, X } from 'lucide-react'
+
+interface User {
+    id: string;
+    email?: string;
+    user_metadata: {
+        full_name?: string;
+        avatar_url?: string;
+    }
+}
 
 export default function DashboardLayout({
     children,
@@ -12,9 +21,10 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const pathname = usePathname()
+    const lastPathname = useRef(pathname)
     const supabase = createClient()
 
     useEffect(() => {
@@ -31,7 +41,11 @@ export default function DashboardLayout({
 
     // Close sidebar on navigation (mobile)
     useEffect(() => {
-        setIsSidebarOpen(false)
+        if (pathname !== lastPathname.current) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsSidebarOpen(false)
+            lastPathname.current = pathname
+        }
     }, [pathname])
 
     if (loading) return (
@@ -83,21 +97,23 @@ export default function DashboardLayout({
                 </nav>
 
                 <div className="p-6 border-t-4 border-black bg-zinc-900">
-                    <div className="flex items-center gap-4 mb-6 p-3 border-2 border-white/10">
-                        {user.user_metadata?.avatar_url ? (
-                            <img src={user.user_metadata.avatar_url} alt="Profile" className="w-10 h-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" />
-                        ) : (
-                            <div className="w-10 h-10 bg-[#ffeb3b] text-black border-2 border-black flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                                {user.email?.charAt(0).toUpperCase()}
+                    {user && (
+                        <div className="flex items-center gap-4 mb-6 p-3 border-2 border-white/10">
+                            {user.user_metadata?.avatar_url ? (
+                                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-10 h-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" />
+                            ) : (
+                                <div className="w-10 h-10 bg-[#ffeb3b] text-black border-2 border-black flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                    {user.email?.charAt(0).toUpperCase()}
+                                </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-black text-white uppercase truncate tracking-widest">
+                                    {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                </p>
+                                <p className="text-[10px] font-bold text-zinc-500 uppercase">Pro Member</p>
                             </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                            <p className="text-xs font-black text-white uppercase truncate tracking-widest">
-                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                            </p>
-                            <p className="text-[10px] font-bold text-zinc-500 uppercase">Pro Member</p>
                         </div>
-                    </div>
+                    )}
 
                     <form action="/auth/signout" method="post">
                         <button className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-black uppercase tracking-widest text-[#ff5252] border-2 border-[#ff5252]/20 hover:border-[#ff5252] hover:bg-[#ff5252]/10 transition-all">

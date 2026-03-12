@@ -111,7 +111,7 @@ export default function Home() {
                     {/* Top Right Floating Bubble: Purple */}
                     <div className="absolute top-[10%] right-[15%] group animate-float-slow">
                         <div className="bg-[#b388ff] text-black w-24 h-24 rounded-full border-4 border-black flex items-center justify-center p-4 text-center shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                            <p className="font-black text-[10px] leading-tight">Finally, a calendar that says 'no' for you!</p>
+                            <p className="font-black text-[10px] leading-tight">Finally, a calendar that says &apos;no&apos; for you!</p>
                         </div>
                         <div className="mt-2 flex items-center gap-2 justify-end mr-4">
                             <img src="https://i.pravatar.cc/150?u=danniel" className="w-6 h-6 rounded-full border-2 border-black" alt="" />

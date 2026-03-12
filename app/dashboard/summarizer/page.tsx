@@ -34,9 +34,10 @@ export default function SummarizerPage() {
             const res = await saveSummaryAsNote(combinedContent);
             if (res?.error) throw new Error(res.error);
             setSaved(true);
-        } catch (err: any) {
-            console.error(err);
-            alert("Failed to save note: " + err.message);
+        } catch (err: unknown) {
+            const errorObj = err as Error;
+            console.error(errorObj);
+            alert("Failed to save note: " + errorObj.message);
         } finally {
             setSaving(false);
         }
@@ -71,8 +72,9 @@ export default function SummarizerPage() {
                 title: responseData.title,
                 videoId: responseData.videoId
             });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            const errorObj = err as Error;
+            setError(errorObj.message);
         } finally {
             setLoading(false);
         }

@@ -44,7 +44,7 @@ export const DailyBrief = () => {
                         Daily Neural Brief / 24h Synthesis
                     </h4>
                     <p className="text-xl md:text-2xl font-bold text-white italic leading-relaxed pr-10">
-                        "{brief}"
+                        &quot;{brief}&quot;
                     </p>
                 </div>
             </div>

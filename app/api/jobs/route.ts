@@ -5,6 +5,13 @@ const app = new FirecrawlApp({
     apiKey: process.env.FIRECRAWL_API_KEY
 });
 
+interface JobItem {
+    title?: string;
+    description?: string;
+    snippet?: string;
+    url?: string;
+}
+
 export async function POST(request: Request) {
     try {
         const { query, location } = await request.json();
@@ -26,13 +33,13 @@ export async function POST(request: Request) {
         console.log("Firecrawl result keys:", Object.keys(searchResult || {}));
 
         // The SDK returns web results directly in searchResult.web
-        const rawJobs = searchResult.web || [];
+        const rawJobs = (searchResult.web as JobItem[]) || [];
 
         if (rawJobs.length === 0) {
             return NextResponse.json({ jobs: [], message: 'No jobs found for this query.' });
         }
 
-        const jobs = rawJobs.map((item: any) => ({
+        const jobs = rawJobs.map((item: JobItem) => ({
             title: item.title || 'Job Listing',
             snippet: item.description || item.snippet || 'No description available.',
             url: item.url,
@@ -41,8 +48,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ jobs });
 
-    } catch (error: any) {
-        console.error("Job search error:", error);
-        return NextResponse.json({ error: error.message || 'An error occurred during job search' }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error("Job search error:", err);
+        return NextResponse.json({ error: err.message || 'An error occurred during job search' }, { status: 500 });
     }
 }

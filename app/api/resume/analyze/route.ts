@@ -71,8 +71,9 @@ ${extractedText.substring(0, 10000)}`,
 
         return NextResponse.json({ analysis });
 
-    } catch (error: any) {
-        console.error('Resume analysis error:', error);
-        return NextResponse.json({ error: error.message || 'An error occurred during analysis' }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Resume analysis error:', err);
+        return NextResponse.json({ error: err.message || 'An error occurred during analysis' }, { status: 500 });
     }
 }

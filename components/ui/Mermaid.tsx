@@ -20,7 +20,6 @@ export default function Mermaid({ chart }: MermaidProps) {
 
     useEffect(() => {
         if (ref.current && chart) {
-            setError('');
             // Attempt to clean the mindmap if it contains markdown formatting
             const cleanChart = chart.replace(/^```mermaid\s*/m, '').replace(/```$/m, '').trim();
             mermaid.render(`mermaid-${Math.random().toString(36).substring(2)}`, cleanChart)

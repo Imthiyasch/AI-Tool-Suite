@@ -4,12 +4,19 @@ import { useState, useEffect, Suspense } from 'react'
 import { Search, MapPin, Briefcase, ExternalLink, Loader2, Globe } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
+interface Job {
+    title: string;
+    snippet: string;
+    url: string;
+    source: string;
+}
+
 function JobSearchContent() {
     const searchParams = useSearchParams()
     const [query, setQuery] = useState('')
     const [location, setLocation] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const [jobs, setJobs] = useState<any[]>([])
+    const [jobs, setJobs] = useState<Job[]>([])
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -35,8 +42,9 @@ function JobSearchContent() {
             const data = await res.json()
             if (data.error) throw new Error(data.error)
             setJobs(data.jobs || [])
-        } catch (err: any) {
-            setError(err.message || 'Something went wrong')
+        } catch (err: unknown) {
+            const errorObj = err as Error;
+            setError(errorObj.message || 'Something went wrong')
         } finally {
             setIsLoading(false)
         }

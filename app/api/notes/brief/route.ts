@@ -59,8 +59,9 @@ Neural Brief:`;
 
         return NextResponse.json({ brief, count: notes.length })
 
-    } catch (error: any) {
-        console.error('Neural Brief Error:', error)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Neural Brief Error:', err)
+        return NextResponse.json({ error: err.message }, { status: 500 })
     }
 }

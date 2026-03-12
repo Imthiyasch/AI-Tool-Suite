@@ -1,14 +1,25 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, FileText, CheckCircle2, Search, Loader2, Sparkles, User, GraduationCap, Briefcase } from 'lucide-react'
+import { Upload, FileText, CheckCircle2, Search, Loader2, Sparkles, User, GraduationCap, Briefcase, Target, Brain, Award, ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { TiltCard } from '@/components/ui/TiltCard'
+
+interface ResumeAnalysis {
+    name?: string;
+    summary: string;
+    skills: string[];
+    targetRoles: string[];
+    experienceYears: string;
+    education: string[];
+    matchScore: number;
+    improvementPoints: string[];
+}
 
 export default function ResumeAnalyzerPage() {
     const [file, setFile] = useState<File | null>(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [analysis, setAnalysis] = useState<any>(null)
+    const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null)
     const [error, setError] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
@@ -36,8 +47,9 @@ export default function ResumeAnalyzerPage() {
             const data = await res.json()
             if (data.error) throw new Error(data.error)
             setAnalysis(data.analysis)
-        } catch (err: any) {
-            setError(err.message || 'Failed to analyze resume')
+        } catch (err: unknown) {
+            const errorObj = err as Error;
+            setError(errorObj.message || 'Failed to analyze resume')
         } finally {
             setIsLoading(false)
         }
@@ -121,7 +133,7 @@ export default function ResumeAnalyzerPage() {
                                     <circle 
                                         cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" 
                                         strokeDasharray={552.92}
-                                        strokeDashoffset={552.92 * (1 - (analysis.matchScore || 0) / 100)}
+                                        strokeDashoffset={552.92 * (1 - (Number(analysis.matchScore) || 0) / 100)}
                                         className="text-[#69f0ae] transition-all duration-1000 ease-out"
                                     />
                                 </svg>
@@ -160,7 +172,7 @@ export default function ResumeAnalyzerPage() {
                                         Neural Summary / Content
                                     </h4>
                                     <p className="text-zinc-400 leading-relaxed text-xl font-medium italic">
-                                        "{analysis.summary}"
+                                        &quot;{analysis.summary}&quot;
                                     </p>
                                 </div>
                             </TiltCard>

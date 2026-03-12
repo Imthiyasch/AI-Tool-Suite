@@ -79,8 +79,9 @@ If you don't have specific knowledge of this video, generate educational content
 
         return NextResponse.json({ summary, mindmap, transcript, thread, title, videoId });
 
-    } catch (error: any) {
-        console.error("Summarization error:", error);
-        return NextResponse.json({ error: error.message || 'An error occurred during summarization' }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error("Summarization error:", err);
+        return NextResponse.json({ error: err.message || 'An error occurred during summarization' }, { status: 500 });
     }
 }
