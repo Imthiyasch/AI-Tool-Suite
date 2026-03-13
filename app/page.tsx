@@ -13,18 +13,20 @@ export default function Home() {
     }
 
     const handleGoogleLogin = async () => {
-        try {
-            const supabase = createClient()
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+        const supabase = createClient()
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
                 },
-            })
-            if (error) throw error
-        } catch (error: unknown) {
+            },
+        })
+        if (error) {
             console.error('OAuth Error:', error)
-            alert('Authentication failed: ' + (error instanceof Error ? error.message : 'Unknown error'))
+            alert('Login failed: ' + error.message)
         }
     }
 
