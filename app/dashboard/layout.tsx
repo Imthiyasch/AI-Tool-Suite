@@ -115,12 +115,16 @@ export default function DashboardLayout({
                         </div>
                     )}
 
-                    <form action="/auth/signout" method="post">
-                        <button className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-black uppercase tracking-widest text-[#ff5252] border-2 border-[#ff5252]/20 hover:border-[#ff5252] hover:bg-[#ff5252]/10 transition-all">
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
-                        </button>
-                    </form>
+                    <button 
+                        onClick={async () => {
+                            await supabase.auth.signOut()
+                            window.location.href = '/'
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-black uppercase tracking-widest text-[#ff5252] border-2 border-[#ff5252]/20 hover:border-[#ff5252] hover:bg-[#ff5252]/10 transition-all"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                    </button>
                 </div>
             </aside>
 
