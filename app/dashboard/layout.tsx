@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { redirect, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Search, Youtube, LogOut, FileText, Menu, X } from 'lucide-react'
+import { BookOpen, Search, Youtube, LogOut, Menu, X } from 'lucide-react'
 
 interface User {
     id: string;
@@ -82,7 +82,6 @@ export default function DashboardLayout({
                         { href: '/dashboard/notes', label: 'Smart Notes', icon: BookOpen, color: '#ffeb3b' },
                         { href: '/dashboard/summarizer', label: 'YT Pulse', icon: Youtube, color: '#b388ff' },
                         { href: '/dashboard/jobs', label: 'Oracle Search', icon: Search, color: '#69f0ae' },
-                        { href: '/dashboard/resume', label: 'Resume AI', icon: FileText, color: '#448aff' },
                     ].map((item) => (
                         <Link 
                             key={item.href}
