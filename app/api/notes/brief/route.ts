@@ -51,8 +51,8 @@ ${noteContents}
 Neural Brief:`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt
+            model: 'gemini-1.5-flash',
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
         });
 
         const brief = response.text || "Synthesis failed. Neural pathways disconnected.";
