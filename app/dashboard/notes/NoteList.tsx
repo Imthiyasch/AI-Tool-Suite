@@ -14,7 +14,7 @@ interface Note {
 
 interface NoteListProps {
   notes: Note[]
-  onDelete: (id: string) => Promise<void>
+  onDelete: (id: string) => Promise<{ error: string } | { success: boolean }>
 }
 
 export const NoteList: React.FC<NoteListProps> = ({ notes, onDelete }) => {
