@@ -13,13 +13,19 @@ export default function Home() {
     }
 
     const handleGoogleLogin = async () => {
-        const supabase = createClient()
-        await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
-            },
-        })
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            })
+            if (error) throw error
+        } catch (error: unknown) {
+            console.error('OAuth Error:', error)
+            alert('Authentication failed: ' + (error instanceof Error ? error.message : 'Unknown error'))
+        }
     }
 
     return (
@@ -81,7 +87,7 @@ export default function Home() {
                             <span className="hover:bg-[#ffeb3b] p-2">About</span>
                         </div>
                         <div className="h-1 bg-black" />
-                        <button onClick={handleGoogleLogin} className="bg-black text-white py-4 font-black uppercase tracking-widest">Connect Wallet</button>
+                        <button onClick={handleGoogleLogin} className="bg-black text-white py-4 font-black uppercase tracking-widest">Get Started</button>
                     </div>
                 )}
             </nav>
