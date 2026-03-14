@@ -45,7 +45,7 @@ Generate a detailed analysis. Return ONLY a valid JSON object with these keys:
 If you don't have specific knowledge of this video, generate educational content based on the topic suggested by the video ID and URL context. Always provide helpful content rather than refusing.`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-2.5-flash',
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             config: {
                 responseMimeType: 'application/json'
