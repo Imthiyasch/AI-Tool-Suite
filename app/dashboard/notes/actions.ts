@@ -26,12 +26,11 @@ export async function createNote(formData: FormData) {
     return { success: true }
 }
 
-export async function createNoteWithMedia(
-    content: string,
-    imageFile?: File | null,
-    audioBlob?: Blob | null
-) {
+export async function createNoteWithMedia(formData: FormData) {
     const supabase = await createClient()
+    const content = formData.get('content') as string
+    const imageFile = formData.get('image') as File | null
+    const audioBlob = formData.get('audio') as Blob | null
 
     if (!content && !imageFile && !audioBlob) {
         return { error: 'Please provide some content, an image, or a voice note' }
@@ -104,6 +103,28 @@ export async function deleteNote(id: string) {
     const { error } = await supabase.from('notes').delete().eq('id', id).eq('user_id', user.id)
     if (error) {
         console.error('Error deleting note:', error.message)
+        return { error: error.message }
+    }
+
+    revalidatePath('/dashboard/notes')
+    return { success: true }
+}
+
+export async function updateNote(id: string, content: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    if (!content.trim()) return { error: 'Content cannot be empty' }
+
+    const { error } = await supabase
+        .from('notes')
+        .update({ content })
+        .eq('id', id)
+        .eq('user_id', user.id)
+
+    if (error) {
+        console.error('Error updating note:', error.message)
         return { error: error.message }
     }
 

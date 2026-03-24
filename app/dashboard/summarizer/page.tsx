@@ -6,6 +6,7 @@ import { saveSummaryAsNote } from "./actions";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Mermaid from '../../../components/ui/Mermaid';
+import { marked } from 'marked';
 
 interface SummarizerData {
     summary: string;
@@ -29,9 +30,16 @@ export default function SummarizerPage() {
         if (!data) return;
         setSaving(true);
         try {
-            // Save everything combined
-            const combinedContent = `# YouTube Summary\n\n## Summary\n${data.summary}\n\n## Script Outline\n${data.transcript}\n\n## Mindmap Data\n\`\`\`mermaid\n${data.mindmap}\n\`\`\``;
-            const res = await saveSummaryAsNote(combinedContent);
+            // Save everything combined as HTML for the new Rich Text Notes Editor
+            let combinedContent = `<h2>YouTube Summary</h2><br/><h3>Summary</h3>\n${data.summary}\n<br/><h3>Script Outline</h3>\n${data.transcript}`;
+            
+            // convert the markdown parts to HTML
+            combinedContent = await marked.parse(combinedContent);
+
+            // Add mindmap as a raw mermaid block for later rendering or text
+            const finalString = `${combinedContent}<br/><h3>Mindmap Data</h3><pre><code>${data.mindmap}</code></pre>`;
+
+            const res = await saveSummaryAsNote(finalString);
             if (res?.error) throw new Error(res.error);
             setSaved(true);
         } catch (err: unknown) {
@@ -103,7 +111,7 @@ export default function SummarizerPage() {
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             placeholder="https://www.youtube.com/watch?v=..."
-                            className="block w-full pl-12 pr-4 py-5 border-4 border-black bg-zinc-900 text-white placeholder-zinc-600 focus:outline-none focus:bg-zinc-800 transition-all font-bold text-lg"
+                            className="block w-full premium-input pl-12 pr-4 py-5 font-bold text-lg"
                             required
                         />
                     </div>
@@ -126,10 +134,10 @@ export default function SummarizerPage() {
             </form>
 
             {data && (
-                <div className="mt-12 border-4 border-black bg-zinc-950 overflow-hidden shadow-[12px_12px_0px_0px_rgba(179,136,255,0.2)]">
+                <div className="mt-12 glass-panel overflow-hidden">
                     {/* Video Info Preview */}
-                    <div className="p-6 bg-zinc-900 border-b-4 border-black flex items-center gap-6">
-                        <div className="flex-shrink-0 w-32 md:w-48 aspect-video border-2 border-black bg-black relative group overflow-hidden">
+                    <div className="p-6 flex items-center gap-6" style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
+                        <div className="flex-shrink-0 w-32 md:w-48 aspect-video relative group overflow-hidden rounded-xl" style={{ border: '2px solid var(--border-color)', backgroundColor: 'var(--bg-card)' }}>
                             <img 
                                 src={`https://img.youtube.com/vi/${data.videoId}/mqdefault.jpg`} 
                                 alt="Thumbnail"
@@ -140,38 +148,42 @@ export default function SummarizerPage() {
                             </div>
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-xl md:text-3xl font-black uppercase text-white leading-tight mb-2">{data.title}</h3>
-                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{url}</p>
+                            <h3 className="text-xl md:text-3xl font-black uppercase leading-tight mb-2" style={{ color: 'var(--text-primary)' }}>{data.title}</h3>
+                            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{url}</p>
                         </div>
                     </div>
 
                     {/* Header and Save Button */}
-                    <div className="p-4 border-b-4 border-black flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-zinc-900">
-                        <div className="flex overflow-x-auto w-full xl:w-auto bg-black p-1 border-2 border-white/10 no-scrollbar">
+                    <div className="p-4 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6" style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
+                        <div className="flex overflow-x-auto w-full xl:w-auto p-1 rounded-xl no-scrollbar" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
                             <button
                                 onClick={() => setActiveTab('summary')}
-                                className={activeTab === 'summary' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#ffeb3b] text-black border-2 border-black whitespace-nowrap" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white whitespace-nowrap"}
+                                className={activeTab === 'summary' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#ffeb3b] text-black rounded-lg whitespace-nowrap shadow-sm" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all hover:text-[#ffeb3b] whitespace-nowrap"}
+                                style={activeTab !== 'summary' ? { color: 'var(--text-secondary)' } : {}}
                             >
                                 <List className="w-4 h-4" />
                                 Summary
                             </button>
                             <button
                                 onClick={() => setActiveTab('thread')}
-                                className={activeTab === 'thread' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#ff5252] text-white border-2 border-black whitespace-nowrap" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white whitespace-nowrap"}
+                                className={activeTab === 'thread' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#ff5252] text-white rounded-lg whitespace-nowrap shadow-sm" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all hover:text-[#ff5252] whitespace-nowrap"}
+                                style={activeTab !== 'thread' ? { color: 'var(--text-secondary)' } : {}}
                             >
                                 <Star className="w-4 h-4" />
                                 Thread
                             </button>
                             <button
                                 onClick={() => setActiveTab('mindmap')}
-                                className={activeTab === 'mindmap' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#69f0ae] text-black border-2 border-black whitespace-nowrap" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white whitespace-nowrap"}
+                                className={activeTab === 'mindmap' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#69f0ae] text-black rounded-lg whitespace-nowrap shadow-sm" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all hover:text-[#69f0ae] whitespace-nowrap"}
+                                style={activeTab !== 'mindmap' ? { color: 'var(--text-secondary)' } : {}}
                             >
                                 <Network className="w-4 h-4" />
                                 Mindmap
                             </button>
                             <button
                                 onClick={() => setActiveTab('transcript')}
-                                className={activeTab === 'transcript' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#448aff] text-white border-2 border-black whitespace-nowrap" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white whitespace-nowrap"}
+                                className={activeTab === 'transcript' ? "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all bg-[#448aff] text-white rounded-lg whitespace-nowrap shadow-sm" : "flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all hover:text-[#448aff] whitespace-nowrap"}
+                                style={activeTab !== 'transcript' ? { color: 'var(--text-secondary)' } : {}}
                             >
                                 <FileText className="w-4 h-4" />
                                 Script
@@ -201,7 +213,7 @@ export default function SummarizerPage() {
                         </div>
                         
                         {activeTab === 'summary' && (
-                            <div className="prose prose-invert max-w-none prose-h2:text-4xl prose-h2:font-black prose-h2:uppercase prose-h2:tracking-tighter prose-h2:mb-8 prose-p:text-zinc-400 prose-p:text-lg prose-li:text-zinc-400 prose-zinc prose-headings:text-white">
+                            <div className="prose-custom">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {data.summary}
                                 </ReactMarkdown>
@@ -223,11 +235,11 @@ export default function SummarizerPage() {
                         {activeTab === 'thread' && (
                             <div className="space-y-12">
                                 {data.thread.split('---').map((tweet, i) => (
-                                    <div key={i} className="relative p-8 bg-zinc-900 border-4 border-black shadow-[4px_4px_0px_0px_rgba(255,82,82,0.3)] group hover:shadow-[8px_8px_0px_0px_rgba(255,82,82,0.5)] transition-all">
-                                        <div className="absolute -top-4 -left-4 w-10 h-10 bg-[#ff5252] border-2 border-black flex items-center justify-center font-black text-white italic">
+                                    <div key={i} className="relative p-8 rounded-xl group transition-all" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+                                        <div className="absolute -top-4 -left-4 w-10 h-10 bg-[#ff5252] rounded-full flex items-center justify-center font-black text-white italic shadow-md">
                                             {i + 1}
                                         </div>
-                                        <p className="text-xl md:text-2xl font-bold leading-relaxed text-white pr-8 italic">
+                                        <p className="text-xl md:text-2xl font-bold leading-relaxed pr-8 italic" style={{ color: 'var(--text-primary)' }}>
                                             {tweet.trim()}
                                         </p>
                                         <div className="mt-6 flex items-center justify-between">

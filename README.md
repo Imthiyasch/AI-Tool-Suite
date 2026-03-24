@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Brevio Lumio
 
-## Getting Started
+Brevio Lumio is an AI-powered productivity software suite that includes an Admin Dashboard, YouTube Summarizer, AI-powered Smart Notes, and an intelligent Job Search tracker.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Google Authentication:** Secure login using NextAuth and Supabase OAuth.
+- **YouTube Summarizer:** Automatically extract and summarize YouTube videos using AI.
+- **Admin Dashboard:** Role-based access control to view all users and monitor system analytics.
+- **Smart Notes:** Full CRUD operations on personal notes, securely gated by Supabase Row-Level Security.
+- **Dark/Light Mode:** Full theme support for a visually pleasing experience.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** Next.js 15 (App Router)
+- **Database / Auth:** Supabase
+- **Styling:** Tailwind CSS + Lucide React Icons
+- **AI Core:** Gemini 1.5 API (via Google / OpenRouter)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local Setup
 
-## Learn More
+1. **Clone the repository:**
+   \`\`\`bash
+   git clone <repo-url>
+   cd aio-tool-suite
+    \`\`\`
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies:**
+   \`\`\`bash
+   npm install
+   \`\`\`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Set up Environment Variables:**
+   Create a `.env.local` file at the root:
+   \`\`\`env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GEMINI_API_KEY=your_gemini_api_key
+   \`\`\`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run the development server:**
+   \`\`\`bash
+   npm run dev
+   \`\`\`
 
-## Deploy on Vercel
+5. **Open your browser:** Navigate to \`http://localhost:3000\`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security Rules
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Strict Access:** Features inside `/dashboard`, `/admin`, and `/notes` are explicitly protected by `middleware.ts`. Unauthorized access will redirect visitors to `/`.
+- **Role Verification:** The `/admin` route requires a user metadata flag \`is_admin: true\` in Supabase.

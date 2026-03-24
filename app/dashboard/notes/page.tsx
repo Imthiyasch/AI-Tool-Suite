@@ -16,11 +16,11 @@ export default async function NotesPage() {
     return (
         <div className="max-w-6xl mx-auto space-y-12 pb-20 font-sans">
             <div className="space-y-4">
-                <div className="inline-block bg-[#ffeb3b] text-black px-4 py-1 border-2 border-black font-black uppercase text-[10px] tracking-widest shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                <div className="inline-block px-4 py-1 rounded-full font-black uppercase text-[10px] tracking-widest shadow-sm" style={{ background: 'var(--accent-yellow)', color: '#000' }}>
                     Neural Engine / Knowledge Base
                 </div>
-                <h2 className="text-5xl font-black uppercase italic tracking-tighter">Smart Notes</h2>
-                <p className="text-zinc-500 text-xl font-medium max-w-2xl">
+                <h2 className="text-5xl font-black uppercase italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>Smart Notes</h2>
+                <p className="text-xl font-medium max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
                     Take text notes, snap photos, or record voice memos. All secured with Supabase RLS.
                 </p>
             </div>

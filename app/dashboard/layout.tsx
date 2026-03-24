@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { redirect, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Search, Youtube, LogOut, Menu, X } from 'lucide-react'
+import { BookOpen, Search, Youtube, LogOut, Menu, X, ShieldAlert, Sun, Moon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 
 interface User {
     id: string;
@@ -12,6 +13,7 @@ interface User {
     user_metadata: {
         full_name?: string;
         avatar_url?: string;
+        is_admin?: boolean;
     }
 }
 
@@ -26,6 +28,7 @@ export default function DashboardLayout({
     const pathname = usePathname()
     const lastPathname = useRef(pathname)
     const supabase = createClient()
+    const { theme, setTheme } = useTheme()
 
     useEffect(() => {
         const checkUser = async () => {
@@ -55,10 +58,10 @@ export default function DashboardLayout({
     )
 
     return (
-        <div className="min-h-screen bg-black text-white flex selection:bg-[#ffeb3b] selection:text-black overflow-hidden h-screen">
-            {/* Neo-Brutalist Grid Background */}
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.1]" 
-                 style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="min-h-screen flex selection:bg-accent-blue overflow-hidden h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}>
+            {/* Soft Grid Background */}
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] dark:opacity-[0.1]" 
+                 style={{ backgroundImage: 'linear-gradient(var(--text-primary) 1px, transparent 1px), linear-gradient(90deg, var(--text-primary) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
             {/* Overlay for mobile sidebar */}
             {isSidebarOpen && (
@@ -69,9 +72,9 @@ export default function DashboardLayout({
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed lg:relative z-50 w-72 h-full border-r-4 border-black bg-zinc-950 flex flex-col shadow-[4px_0px_0px_0px_rgba(255,255,255,0.1)] transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-                <div className="p-8 border-b-4 border-black bg-white text-black flex items-center justify-between">
-                    <h2 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Brevio<br/>Lumio</h2>
+            <aside className={`fixed lg:relative z-50 w-72 h-full flex flex-col transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`} style={{ backgroundColor: 'var(--bg-surface)', borderRight: '1px solid var(--border-color)', boxShadow: 'var(--glass-shadow)' }}>
+                <div className="p-8 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <h2 className="text-2xl font-black italic tracking-tighter uppercase leading-none" style={{ color: 'var(--text-primary)' }}>Brevio<br/>Lumio</h2>
                     <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden">
                         <X className="w-8 h-8" />
                     </button>
@@ -81,70 +84,83 @@ export default function DashboardLayout({
                     {[
                         { href: '/dashboard/notes', label: 'Smart Notes', icon: BookOpen, color: '#ffeb3b' },
                         { href: '/dashboard/summarizer', label: 'YT Pulse', icon: Youtube, color: '#b388ff' },
-                        { href: '/dashboard/jobs', label: 'Oracle Search', icon: Search, color: '#69f0ae' },
+                        { href: '/dashboard/research', label: 'AI Research', icon: Search, color: '#448aff' },
+                        ...(user?.user_metadata?.is_admin ? [{ href: '/dashboard/admin', label: 'Admin Panel', icon: ShieldAlert, color: '#ff5252' }] : [])
                     ].map((item) => (
                         <Link 
                             key={item.href}
                             href={item.href} 
-                            className={`flex items-center gap-4 px-4 py-4 font-black uppercase text-xs tracking-[0.2em] border-2 border-transparent transition-all rounded-none ${pathname === item.href ? `bg-[${item.color}] text-black border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]` : 'text-zinc-400 hover:border-black hover:bg-zinc-900 group'}`}
-                            style={{ backgroundColor: pathname === item.href ? item.color : '' }}
+                            className={`flex items-center gap-4 px-4 py-4 font-bold uppercase text-xs tracking-[0.15em] transition-all rounded-xl ${pathname === item.href ? `shadow-sm` : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 group'}`}
+                            style={pathname === item.href ? { backgroundColor: item.color, color: '#000', textShadow: '0 1px 2px rgba(255,255,255,0.2)' } : { color: 'var(--text-primary)' }}
                         >
-                            <item.icon className={`w-5 h-5 ${pathname === item.href ? 'text-black' : 'group-hover:text-white'}`} />
+                            <item.icon className="w-5 h-5" />
                             {item.label}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="p-6 border-t-4 border-black bg-zinc-900">
+                <div className="p-6" style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
                     {user && (
-                        <div className="flex items-center gap-4 mb-6 p-3 border-2 border-white/10">
+                        <div className="flex items-center gap-4 mb-6 p-3 rounded-xl" style={{ border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-card)' }}>
                             {user.user_metadata?.avatar_url ? (
-                                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-10 h-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" />
+                                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-10 h-10 rounded-full" style={{ border: '2px solid var(--border-color)' }} />
                             ) : (
-                                <div className="w-10 h-10 bg-[#ffeb3b] text-black border-2 border-black flex items-center justify-center font-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: 'var(--accent-blue)', color: '#fff' }}>
                                     {user.email?.charAt(0).toUpperCase()}
                                 </div>
                             )}
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-black text-white uppercase truncate tracking-widest">
+                                <p className="text-xs font-bold uppercase truncate tracking-widest" style={{ color: 'var(--text-primary)' }}>
                                     {user.user_metadata?.full_name || user.email?.split('@')[0]}
                                 </p>
-                                <p className="text-[10px] font-bold text-zinc-500 uppercase">Pro Member</p>
+                                <p className="text-[10px] font-medium uppercase" style={{ color: 'var(--accent-blue)' }}>Pro Member</p>
                             </div>
                         </div>
                     )}
 
-                    <button 
-                        onClick={async () => {
-                            await supabase.auth.signOut()
-                            window.location.href = '/'
-                        }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-black uppercase tracking-widest text-[#ff5252] border-2 border-[#ff5252]/20 hover:border-[#ff5252] hover:bg-[#ff5252]/10 transition-all"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                    </button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                            className="flex items-center justify-center p-3 rounded-xl transition-all hover:bg-black/5 dark:hover:bg-white/5"
+                            style={{ border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                        >
+                            {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+
+                        <button 
+                            onClick={async () => {
+                                await supabase.auth.signOut()
+                                window.location.href = '/'
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
+                            style={{ border: '1px solid var(--accent-red)', color: 'var(--accent-red)' }}
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                        </button>
+                    </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="relative z-10 flex-1 overflow-auto flex flex-col h-full bg-black">
-                <header className="h-20 border-b-4 border-black flex items-center justify-between px-6 md:px-10 bg-black/50 backdrop-blur-md sticky top-0 z-20">
+            <main className="relative z-10 flex-1 overflow-auto flex flex-col h-full" style={{ backgroundColor: 'var(--bg-page)' }}>
+                <header className="h-20 flex items-center justify-between px-6 md:px-10 backdrop-blur-md sticky top-0 z-20" style={{ backgroundColor: 'var(--bg-surface)', borderBottom: '1px solid var(--border-color)' }}>
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={() => setIsSidebarOpen(true)}
-                            className="lg:hidden p-2 border-2 border-black bg-[#ffeb3b] text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                            className="lg:hidden p-2 rounded-lg transition-all"
+                            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-pulse hidden sm:block" />
-                        <h1 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-zinc-400">
-                            <span className="hidden xs:inline">Neutral Network / </span><span className="text-white">Active</span>
+                        <div className="w-3 h-3 rounded-full animate-pulse hidden sm:block" style={{ backgroundColor: 'var(--accent-blue)' }} />
+                        <h1 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] opacity-70" style={{ color: 'var(--text-primary)' }}>
+                            <span className="hidden xs:inline">Neutral Network / </span><span style={{ color: 'var(--text-primary)' }}>Active</span>
                         </h1>
                     </div>
                     <div className="flex items-center gap-6">
-                         <div className="hidden lg:flex items-center gap-2 px-4 py-2 border-2 border-white/5 text-[10px] font-black uppercase text-zinc-500">
-                            System Status: <span className="text-[#69f0ae]">Optimal</span>
+                         <div className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase" style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                            System Status: <span style={{ color: 'var(--accent-green)' }}>Optimal</span>
                          </div>
                     </div>
                 </header>

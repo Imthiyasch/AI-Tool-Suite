@@ -1,7 +1,0 @@
-```json
-{
-  "summary": "Error: I am unable to directly access and process the content of YouTube videos, including their transcripts, audio, or visual information. Therefore, I cannot provide a summary, mindmap, or transcript for the given video URL.",
-  "mindmap": "Error: Video content could not be accessed for analysis.",
-  "transcript": "Error: Direct access to video content and its dialogue is not supported."
-}
-```

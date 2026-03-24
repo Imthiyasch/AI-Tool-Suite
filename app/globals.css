@@ -1,26 +1,193 @@
+/* app/globals.css */
 @import "tailwindcss";
 
+/* ===== Premium Theme Variables ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light Mode - Soft Ivory & Clean Whites */
+  --bg-page: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-sidebar: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-input: #f3f4f6;
+  
+  /* Accents */
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+}
+
+.dark {
+  /* Dark Mode - Deep Space Zinc/Blue */
+  --bg-page: #050505;
+  --bg-surface: #0a0a0a;
+  --bg-sidebar: #050505;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-input: rgba(255, 255, 255, 0.05);
+
+  /* Accents */
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-green: #34d399;
+  --accent-yellow: #fbbf24;
+  --accent-red: #f87171;
+
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--bg-page);
+  --color-foreground: var(--text-primary);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* ===== Glassmorphism Utilities ===== */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(139, 92, 246, 0.3); /* Purple hover hint */
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-panel:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Smooth Inputs */
+.premium-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.premium-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ===== Scrollbar Styling ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== React Quill Editor Theme Overrides ===== */
+.quill {
+  display: flex !important;
+  flex-direction: column !important;
+  font-family: var(--font-sans) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--border-color) !important;
+  background: var(--bg-surface) !important;
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: var(--bg-input) !important;
+  font-family: inherit !important;
+  padding: 12px !important;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  color: var(--text-primary) !important;
+  min-height: 150px !important;
+}
+
+.ql-editor {
+  padding: 16px !important;
+  line-height: 1.6 !important;
+}
+
+/* React Quill Dark Mode Fixes */
+.dark .ql-snow .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.8) !important;
+}
+.dark .ql-snow .ql-fill {
+  fill: rgba(255, 255, 255, 0.8) !important;
+}
+.dark .ql-snow .ql-picker {
+  color: var(--text-primary) !important;
+}
+/* Quill Dropdown Menu Fix */
+.dark .ql-snow .ql-picker-options {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+}
+.dark .ql-snow .ql-picker-item {
+  color: var(--text-primary) !important;
+}
+.dark .ql-snow .ql-picker-item:hover,
+.dark .ql-snow .ql-picker-item.ql-selected {
+  color: var(--accent-blue) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.dark .ql-snow.ql-toolbar button:hover .ql-stroke,
+.dark .ql-snow .ql-toolbar button:hover .ql-stroke,
+.dark .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.dark .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--accent-blue) !important;
+}
+.dark .ql-snow.ql-toolbar button:hover .ql-fill,
+.dark .ql-snow .ql-toolbar button:hover .ql-fill,
+.dark .ql-snow.ql-toolbar button.ql-active .ql-fill,
+.dark .ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--accent-blue) !important;
+}
+.dark .quill .ql-editor.ql-blank::before {
+  color: #9ca3af !important;
+  font-style: italic !important;
+  opacity: 1 !important;
+}
+
+/* Prose/HTML Content Styling for Note Displays */
+.prose-custom p { margin-bottom: 1em; }
+.prose-custom h1, .prose-custom h2, .prose-custom h3 { 
+  font-weight: 700; 
+  margin-top: 1.5em; 
+  margin-bottom: 0.5em; 
+}
+.prose-custom h2 { font-size: 1.4rem; }
+.prose-custom h3 { font-size: 1.2rem; }
+.prose-custom ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+.prose-custom ol { list-style-type: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+.prose-custom a { color: var(--accent-blue); text-decoration: underline; }

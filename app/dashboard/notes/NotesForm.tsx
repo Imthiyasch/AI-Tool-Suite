@@ -4,10 +4,15 @@ import { useRef, useTransition, useState, useCallback } from 'react'
 import { createNoteWithMedia } from './actions'
 import { Loader2, ImageIcon, Mic, MicOff, X, Play, Square } from 'lucide-react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
+import 'react-quill-new/dist/quill.snow.css'
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
 export function NotesForm() {
     const formRef = useRef<HTMLFormElement>(null)
     const [isPending, startTransition] = useTransition()
+    const [content, setContent] = useState('')
 
     // Image state
     const [imageFile, setImageFile] = useState<File | null>(null)
@@ -76,8 +81,6 @@ export function NotesForm() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const content = formData.get('content') as string
 
         if (!content && !imageFile && !audioBlob) {
             alert('Please add some text, an image, or record a voice note.')
@@ -85,9 +88,14 @@ export function NotesForm() {
         }
 
         startTransition(async () => {
-            const result = await createNoteWithMedia(content, imageFile, audioBlob)
+            const formData = new FormData()
+            formData.append('content', content || '')
+            if (imageFile) formData.append('image', imageFile)
+            if (audioBlob) formData.append('audio', audioBlob)
+            
+            const result = await createNoteWithMedia(formData)
             if (result.success) {
-                formRef.current?.reset()
+                setContent('')
                 clearImage()
                 clearAudio()
             } else {
@@ -97,57 +105,62 @@ export function NotesForm() {
     }
 
     return (
-        <div className="bg-zinc-950 p-8 border-4 border-black space-y-6 shadow-[8px_8px_0px_0px_rgba(255,235,59,0.1)]">
+        <div className="p-8 shadow-sm mb-12 glass-panel" style={{ backgroundColor: 'var(--bg-surface)' }}>
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 {/* Text input row */}
                 <div className="flex flex-col lg:flex-row gap-6">
                     <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            name="content"
-                            placeholder="Type a neural sync note..."
-                            disabled={isPending}
-                            className="w-full bg-black border-4 border-black px-6 py-4 text-white font-bold text-lg focus:outline-none focus:bg-zinc-900 placeholder:text-zinc-700 transition-all disabled:opacity-50"
+                        <ReactQuill 
+                            theme="snow" 
+                            value={content} 
+                            onChange={setContent} 
+                            placeholder="Draft a new neural sync..."
+                            readOnly={isPending}
                         />
                     </div>
                     {/* Media action buttons */}
-                    <div className="flex gap-4 items-center">
-                        {/* Image picker */}
-                        <button
-                            type="button"
-                            title="Attach image"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isPending}
-                            className={`p-4 border-4 border-black transition-all ${imageFile ? 'bg-[#448aff] text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]' : 'bg-white text-black hover:bg-[#448aff] hover:text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]'}`}
-                        >
-                            <ImageIcon className="w-6 h-6" />
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageSelect}
-                        />
+                    <div className="flex flex-col sm:flex-row gap-4 justify-start items-start">
+                        <div className="flex gap-2">
+                            {/* Image picker */}
+                            <button
+                                type="button"
+                                title="Attach image"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isPending}
+                                className={`p-4 rounded-xl transition-all ${imageFile ? 'shadow-md opacity-100' : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                                style={imageFile ? { backgroundColor: 'var(--accent-blue)', color: '#fff' } : { border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                            >
+                                <ImageIcon className="w-5 h-5" />
+                            </button>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageSelect}
+                            />
 
-                        {/* Microphone button */}
-                        <button
-                            type="button"
-                            title={isRecording ? 'Stop recording' : 'Record voice note'}
-                            onClick={isRecording ? stopRecording : startRecording}
-                            disabled={isPending}
-                            className={`p-4 border-4 border-black transition-all ${isRecording ? 'bg-[#ff5252] text-white animate-pulse' : audioBlob ? 'bg-[#69f0ae] text-black shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]' : 'bg-white text-black hover:bg-[#ff5252] hover:text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]'}`}
-                        >
-                            {isRecording ? <Square className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-                        </button>
+                            {/* Microphone button */}
+                            <button
+                                type="button"
+                                title={isRecording ? 'Stop recording' : 'Record voice note'}
+                                onClick={isRecording ? stopRecording : startRecording}
+                                disabled={isPending}
+                                className={`p-4 rounded-xl transition-all ${isRecording ? 'animate-pulse' : audioBlob ? 'shadow-md' : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                                style={isRecording ? { backgroundColor: 'var(--accent-red)', color: '#fff' } : audioBlob ? { backgroundColor: 'var(--accent-green)', color: '#fff' } : { border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                            >
+                                {isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                            </button>
+                        </div>
 
                         {/* Save button */}
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="bg-[#ffeb3b] text-black px-10 py-4 border-4 border-black font-black uppercase text-sm tracking-[0.2em] hover:bg-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                            className="px-10 py-4 font-bold uppercase text-sm tracking-[0.15em] rounded-xl transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-md hover:shadow-lg w-full sm:w-auto"
+                            style={{ backgroundColor: 'var(--accent-yellow)', color: '#111827', border: '1px solid rgba(0,0,0,0.1)' }}
                         >
-                            {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sync Now'}
+                            {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Note'}
                         </button>
                     </div>
                 </div>
@@ -164,16 +177,18 @@ export function NotesForm() {
                 <div className="flex flex-wrap gap-6">
                     {/* Image preview */}
                     {imagePreview && (
-                        <div className="relative group p-1 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                        <div className="relative group p-1 rounded-xl glass-panel shadow-sm">
                             <img
                                 src={imagePreview}
                                 alt="Preview"
-                                className="h-24 w-24 object-cover border-2 border-black"
+                                className="h-24 w-24 object-cover rounded-lg"
+                                style={{ border: '1px solid var(--border-color)' }}
                             />
                             <button
                                 type="button"
                                 onClick={clearImage}
-                                className="absolute -top-3 -right-3 bg-black text-white p-1 border-2 border-white hover:bg-[#ff5252] transition-all"
+                                className="absolute -top-3 -right-3 p-1 rounded-full hover:bg-red-500/10 transition-all shadow-md z-10"
+                                style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', color: 'var(--accent-red)' }}
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -182,13 +197,14 @@ export function NotesForm() {
 
                     {/* Audio preview */}
                     {audioUrl && (
-                        <div className="flex items-center gap-4 bg-white border-4 border-black px-6 py-4 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                            <Mic className="w-5 h-5 text-black flex-shrink-0" />
-                            <audio src={audioUrl} controls className="h-10 max-w-[250px] invert" />
+                        <div className="flex items-center gap-4 px-6 py-4 glass-panel rounded-xl shadow-sm">
+                            <Mic className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--accent-green)' }} />
+                            <audio src={audioUrl} controls className="h-10 max-w-[250px]" style={{ filter: 'grayscale(1) invert(0.8)' }} />
                             <button
                                 type="button"
                                 onClick={clearAudio}
-                                className="bg-black text-white p-2 border-2 border-white hover:bg-[#ff5252] transition-all"
+                                className="p-2 rounded-full hover:bg-red-500/10 transition-all shadow-md"
+                                style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', color: 'var(--accent-red)' }}
                             >
                                 <X className="w-4 h-4" />
                             </button>
